@@ -1,0 +1,538 @@
+﻿@page
+@model admin_chinatsuservices.Pages.ServicePannelModel
+@{
+    ViewData["Title"] = "Service Pannel";
+}
+
+<style>
+    /* Overall Styling */
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --background-color: #f4f7f9;
+        --card-bg-color: #ffffff;
+        --border-color: #e0e0e0;
+        --shadow-color: rgba(0, 0, 0, 0.08);
+        --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+        font-family: var(--font-stack);
+        background-color: var(--background-color);
+        color: var(--primary-color);
+        margin: 0;
+        padding: 40px;
+    }
+
+    h1 {
+        text-align: center;
+        color: var(--primary-color);
+        margin-bottom: 40px;
+        font-weight: 300;
+        letter-spacing: 1px;
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        justify-content: center;
+    }
+
+    /* Service Card Styling */
+    .service-card {
+        background: var(--card-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px var(--shadow-color);
+        padding: 25px;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .service-card h2 {
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            word-wrap: break-word;
+            font-weight: 500;
+        }
+
+        .service-card p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #777;
+            word-wrap: break-word;
+        }
+
+    .status-online {
+        color: #2ecc71;
+        font-weight: bold;
+    }
+
+    .status-offline {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+
+    .status-unknown {
+        color: #f39c12;
+        font-weight: bold;
+    }
+
+    /* Add Button Styling */
+    .add-card {
+        text-align: center;
+        border: 2px dashed #ccc;
+        background-color: #f9f9f9;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .add-icon {
+        font-size: 3em;
+        font-weight: 300;
+        color: #ccc;
+        margin-bottom: 10px;
+    }
+
+    /* Context Menu Styling */
+    .context-menu {
+        position: fixed;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        list-style: none;
+        padding: 8px 0;
+        margin: 0;
+        display: none;
+        min-width: 180px;
+    }
+
+        .context-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.95em;
+        }
+
+            .context-menu li:hover {
+                background-color: #f5f5f5;
+            }
+
+            .context-menu li a {
+                text-decoration: none;
+                color: inherit;
+                display: block;
+            }
+
+        .context-menu .disabled {
+            color: #bdc3c7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+    /* Description Tooltip */
+    .context-description {
+        position: absolute;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 5px;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        display: none;
+        max-width: 300px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        z-index: 1000;
+        font-size: 0.85em;
+        line-height: 1.4;
+    }
+
+    /* Modal Styling */
+    .modal {
+        display: none; /* This ensures the modals are hidden by default */
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        /* The following lines align the content, so we'll leave them */
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 32px;
+        font-weight: bold;
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        line-height: 1;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .modal-content h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-weight: 300;
+        color: var(--primary-color);
+    }
+
+    .modal-content form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-content label {
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .modal-content input[type="text"] {
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1em;
+        transition: border-color 0.2s;
+    }
+
+        .modal-content input[type="text"]:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+    .modal-content input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .modal-content button[type="submit"] {
+        padding: 12px;
+        background-color: var(--secondary-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 1em;
+        transition: background-color 0.2s;
+    }
+
+        .modal-content button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+    #deleteModal .modal-content button {
+        background-color: #e74c3c;
+    }
+
+        #deleteModal .modal-content button:hover {
+            background-color: #c0392b;
+        }
+</style>
+
+<h1>Service Pannel</h1>
+<div class="dashboard-container">
+    @if (ViewData["Services"] is Dictionary<string, Service> services)
+    {
+        @foreach (var kvp in services)
+        {
+            var serviceID = kvp.Key;
+            var service = kvp.Value;
+            <div class="service-card" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.localNetwork.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
+                <h2>@service.serviceName</h2>
+                <p><strong>Host:</strong> @service.IP</p>
+                <p><strong>Status:</strong> <span class="status-@service.serviceStatus.ToLower()">@service.serviceStatus</span></p>
+            </div>
+        }
+    }
+    <div id="addServiceCard" class="service-card add-card">
+        <div class="add-icon">+</div>
+        <p>Add New Service</p>
+    </div>
+</div>
+
+<ul id="contextMenu" class="context-menu">
+    <li id="navToWebUI">Web UI</li>
+    <li id="rdp">RDP</li>
+    <li id="update">Update</li>
+    <li id="delete">Delete</li>
+</ul>
+
+<div id="contextDescription" class="context-description"></div>
+
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add New Service</h2>
+        <form id="addForm" method="post" asp-page-handler="AddService">
+            <label for="add-service-name">Service Name:</label>
+            <input type="text" id="add-service-name" name="serviceName" required />
+            <label for="add-service-desc">Description:</label>
+            <input type="text" id="add-service-desc" name="serviceDesc" />
+            <label for="add-ip">IP Address:</label>
+            <input type="text" id="add-ip" name="ip" required />
+            <label>
+                <input type="checkbox" id="add-local-network" name="localNetwork" /> Can RDP
+            </label>
+            <label>
+                <input type="checkbox" id="add-has-webui" name="hasWebUI" /> Has Web UI
+            </label>
+            <label>
+                <input type="checkbox" id="add-access-remote" name="canAccessOutSideNet" /> Can Access Outside Network
+            </label>
+            <label for="add-webui">Web UI URL:</label>
+            <input type="text" id="add-webui" name="webUI" />
+            <button type="submit">Add Service</button>
+        </form>
+    </div>
+</div>
+
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Update Service</h2>
+        <form id="updateForm" method="post" asp-page-handler="UpdateService">
+            <input type="hidden" id="update-service-id" name="serviceID" />
+            <label for="update-service-name">Service Name:</label>
+            <input type="text" id="update-service-name" name="serviceName" required />
+            <label for="update-service-desc">Description:</label>
+            <input type="text" id="update-service-desc" name="serviceDesc" />
+            <label for="update-ip">IP Address:</label>
+            <input type="text" id="update-ip" name="ip" required />
+            <label>
+                <input type="checkbox" id="update-local-network" name="localNetwork" /> Can RDP
+            </label>
+            <label>
+                <input type="checkbox" id="update-has-webui" name="hasWebUI" /> Has Web UI
+            </label>
+            <label>
+                <input type="checkbox" id="update-access-remote" name="canAccessOutSideNet" /> Can Access Outside Network
+            </label>
+            <label for="update-webui">Web UI URL:</label>
+            <input type="text" id="update-webui" name="webUI" />
+            <button type="submit">Update Service</button>
+        </form>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete <strong id="delete-service-name"></strong>?</p>
+        <form id="deleteForm" method="post" asp-page-handler="DeleteService">
+            <input type="hidden" id="delete-service-id" name="serviceID" />
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const contextMenu = document.getElementById('contextMenu');
+        const contextDescription = document.getElementById('contextDescription');
+        let currentServiceCard = null;
+
+        // Open the Add Service modal
+        document.getElementById('addServiceCard').addEventListener('click', () => {
+            const addModal = document.getElementById('addModal');
+            addModal.style.display = "flex";
+        });
+
+        // Handle right-click on service cards
+        //isLocalNetwork is if i can access rdp
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('contextmenu', (e) => {
+                if (!card.classList.contains('add-card')) {
+                    e.preventDefault();
+                    currentServiceCard = e.target.closest('.service-card');
+                    const hasWebUI = currentServiceCard.dataset.serviceHasWebui === "true";
+                    const localNetwork = currentServiceCard.dataset.serviceLocalnetwork === "true";
+                    const canRemoteAccess = currentServiceCard.dataset.canremoteaccess === "true";
+                    const serviceDesc = currentServiceCard.dataset.serviceDesc;
+
+                    const navToWebUIItem = document.getElementById('navToWebUI');
+                    const rdpItem = document.getElementById('rdp');
+
+                    var isInternalRdp = false;
+                    var canAccessWebUI = false;
+
+                    if (localNetwork === true && @ViewData["IsInternalNetwork"] === true) {
+                        isInternalRdp = true;
+                    }
+
+                    if (canRemoteAccess === true) {
+                        canAccessWebUI = true;
+                    }
+                    else {
+                        if (@ViewData["IsInternalNetwork"] === true) {
+                            canAccessWebUI = true;
+                        }
+                    }
+
+                    if (hasWebUI === false){
+                        canAccessWebUI = false;
+                    }
+
+                    // Toggle the disabled class based on data attributes
+                    navToWebUIItem.classList.toggle('disabled', !canAccessWebUI);
+                    rdpItem.classList.toggle('disabled', !isInternalRdp);
+
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${e.pageX}px`;
+                    contextMenu.style.top = `${e.pageY}px`;
+
+                    // Show description
+                    contextDescription.innerText = serviceDesc || 'No description provided.';
+                    contextDescription.style.display = 'block';
+                    contextDescription.style.left = `${e.pageX}px`;
+                    contextDescription.style.top = `${e.pageY + contextMenu.offsetHeight + 5}px`;
+                }
+            });
+        });
+
+        // Hide context menu and description on any left-click outside of it
+        document.addEventListener('click', (e) => {
+            if (!contextMenu.contains(e.target) && contextMenu.style.display === 'block') {
+                contextMenu.style.display = 'none';
+                contextDescription.style.display = 'none';
+            }
+        });
+
+        // Context Menu Actions
+        document.getElementById('navToWebUI').addEventListener('click', () => {
+            if (!document.getElementById('navToWebUI').classList.contains('disabled') && currentServiceCard) {
+                const url = currentServiceCard.dataset.serviceWebui;
+                if (url) {
+                    window.open(url, '_blank');
+                }
+            }
+        });
+
+        document.getElementById('rdp').addEventListener('click', () => {
+            if (!document.getElementById('rdp').classList.contains('disabled') && currentServiceCard) {
+                const ip = currentServiceCard.dataset.serviceIp;
+                if (ip) {
+                    launchRdp(ip);
+                }
+            }
+        });
+
+        document.getElementById('update').addEventListener('click', () => {
+            if (currentServiceCard) {
+                const modal = document.getElementById('updateModal');
+                const serviceID = currentServiceCard.dataset.serviceId;
+                const serviceName = currentServiceCard.dataset.serviceName;
+                const serviceIp = currentServiceCard.dataset.serviceIp;
+                const description = currentServiceCard.dataset.serviceDesc;
+                const localNetwork = currentServiceCard.dataset.serviceLocalnetwork === "true";
+                const hasWebUI = currentServiceCard.dataset.serviceHasWebui === "true";
+                const webUI = currentServiceCard.dataset.serviceWebui;
+                const canRemoteAccess = currentServiceCard.dataset.canremoteaccess === "true";
+
+                document.getElementById('update-service-id').value = serviceID;
+                document.getElementById('update-service-name').value = serviceName;
+                document.getElementById('update-ip').value = serviceIp;
+                document.getElementById('update-service-desc').value = description;
+                document.getElementById('update-local-network').checked = localNetwork;
+                document.getElementById('update-has-webui').checked = hasWebUI;
+                document.getElementById('update-access-remote').checked = canRemoteAccess;
+                document.getElementById('update-webui').value = webUI;
+
+                modal.style.display = "flex";
+            }
+        });
+
+        document.getElementById('delete').addEventListener('click', () => {
+            if (currentServiceCard) {
+                const modal = document.getElementById('deleteModal');
+                const serviceID = currentServiceCard.dataset.serviceId;
+                const serviceName = currentServiceCard.dataset.serviceName;
+
+                document.getElementById('delete-service-id').value = serviceID;
+                document.getElementById('delete-service-name').innerText = serviceName;
+
+                modal.style.display = "flex";
+            }
+        });
+
+        // Modal Close Functionality
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', (e) => {
+                e.target.closest('.modal').style.display = "none";
+            });
+        });
+
+        // Only close the modal on a click outside of it
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        };
+    });
+
+    // Function to generate and download the .rdp file
+    function launchRdp(serverIp) {
+        // Basic RDP file content. You can add more parameters here.
+        const rdpContent = `
+            full address:s:${serverIp}
+            prompt for credentials:i:1
+        `;
+
+        // Create a Blob from the content
+        const blob = new Blob([rdpContent], { type: 'application/x-rdp' });
+
+        // Create a link element to trigger the download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${serverIp}.rdp`; // Name of the downloaded file
+
+        // Programmatically click the link to start the download
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
