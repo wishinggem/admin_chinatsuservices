@@ -12,9 +12,9 @@ namespace admin_chinatsuservices.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-
+            return RedirectToPage("/ServicePannel");
         }
     }
 }
