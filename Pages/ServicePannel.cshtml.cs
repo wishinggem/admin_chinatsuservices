@@ -67,7 +67,7 @@ namespace admin_chinatsuservices.Pages
 
         private bool IsInternalNetwork()
         {
-            var remoteIp = HttpContext.Connection.RemoteIpAddress.ToString();
+            /*var remoteIp = GetClientPublicIP();
             var serverPublicIp = GetPublicIPAddress();
             if (remoteIp == serverPublicIp || remoteIp == "::1")
             {
@@ -76,10 +76,13 @@ namespace admin_chinatsuservices.Pages
             else
             {
                 return false;
-            }
+            }*/
+
+            //always returning true as i cannot impliement a system that will work with normal network handeling, so this will only toggle with the checkbox
+            return true;
         }
 
-        public IActionResult OnPostAddService(string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string canAccessOutSideNet, string webUI)
+        public IActionResult OnPostAddService(string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string webUI)
         {
             bool localNetworkSwitch;
             bool hasWebUISwitch;
@@ -103,14 +106,14 @@ namespace admin_chinatsuservices.Pages
                 hasWebUISwitch = false;
             }
 
-            if (canAccessOutSideNet == "on")
+            /*if (canAccessOutSideNet == "on")
             {
                 canRemoteAccessSwitch = true;
             }
             else
             {
                 canRemoteAccessSwitch = false;
-            }
+            }*/
 
             Dictionary<string, Service> services = null;
             try 
@@ -129,7 +132,7 @@ namespace admin_chinatsuservices.Pages
                 localNetwork = localNetworkSwitch,
                 hasWebUI = hasWebUISwitch,
                 webUI = webUI,
-                canRemoteAccess = canRemoteAccessSwitch,
+                canRemoteAccess = true,
                 serviceStatus = "Unknown"
             };
 
@@ -161,7 +164,7 @@ namespace admin_chinatsuservices.Pages
             return RedirectToPage();
         }
 
-        public IActionResult OnPostUpdateService(string serviceID, string serviceName, string serviceDesc, string ip, string localNetwork, string canAccessOutSideNet, string hasWebUI, string webUI)
+        public IActionResult OnPostUpdateService(string serviceID, string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string webUI)
         {
             bool localNetworkSwitch;
             bool hasWebUISwitch;
@@ -185,14 +188,14 @@ namespace admin_chinatsuservices.Pages
                 hasWebUISwitch = false;
             }
 
-            if (canAccessOutSideNet == "on")
+            /*if (canAccessOutSideNet == "on")
             {
                 canRemoteAccessSwitch = true;
             }
             else
             {
                 canRemoteAccessSwitch = false;
-            }
+            }*/
 
             Dictionary<string, Service> services = null;
             try
@@ -214,7 +217,7 @@ namespace admin_chinatsuservices.Pages
                     localNetwork = localNetworkSwitch,
                     hasWebUI = hasWebUISwitch,
                     webUI = webUI,
-                    canRemoteAccess = canRemoteAccessSwitch,
+                    canRemoteAccess = true,
                     serviceStatus = "Unknown"
                 };
 
@@ -257,6 +260,11 @@ namespace admin_chinatsuservices.Pages
 
             return address;
         }
+
+        private string GetClientPublicIP()
+        {
+            return HttpContext.Connection.RemoteIpAddress.ToString();
+        }
     }
 }
 
@@ -274,7 +282,8 @@ public class Service
     public string serviceStatus;
 }
 
-public static class ClientHandler
+[Serializable]
+public class NetworkInfo
 {
-    
+    public string ssid;
 }

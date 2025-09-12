@@ -5,133 +5,212 @@
 }
 
 <style>
-    /* Overall Styling */
+    /* ---------------------------------- */
+    /* Global Styles             */
+    /* ---------------------------------- */
     :root {
-        --primary-color: #2c3e50;
-        --secondary-color: #3498db;
-        --background-color: #f4f7f9;
-        --card-bg-color: #ffffff;
-        --border-color: #e0e0e0;
-        --shadow-color: rgba(0, 0, 0, 0.08);
-        --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        --primary-text: #e0e6f1;
+        --secondary-text: #96a5bb;
+        --background-primary: #1e1e2d;
+        --background-secondary: #27293d;
+        --card-bg: #2b2e42;
+        --border-color: #3f4561;
+        --accent-color: #4b80e8;
+        --shadow-light: rgba(0, 0, 0, 0.1);
+        --shadow-dark: rgba(0, 0, 0, 0.4);
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
-        font-family: var(--font-stack);
-        background-color: var(--background-color);
-        color: var(--primary-color);
+        font-family: var(--font-sans);
+        background-color: var(--background-primary);
+        color: var(--primary-text);
         margin: 0;
-        padding: 40px;
+        padding: 60px;
+        line-height: 1.6;
+    }
+
+    /* ---------------------------------- */
+    /* Layout & Typography       */
+    /* ---------------------------------- */
+    .header {
+        text-align: center;
+        margin-bottom: 50px;
     }
 
     h1 {
-        text-align: center;
-        color: var(--primary-color);
-        margin-bottom: 40px;
-        font-weight: 300;
+        font-weight: 200;
+        font-size: 2.5rem;
         letter-spacing: 1px;
+        margin: 0;
     }
 
     .dashboard-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 25px;
-        justify-content: center;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    /* Service Card Styling */
+    /* ---------------------------------- */
+    /* Service Cards             */
+    /* ---------------------------------- */
     .service-card {
-        background: var(--card-bg-color);
+        background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 10px;
-        box-shadow: 0 5px 15px var(--shadow-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px var(--shadow-dark);
         padding: 25px;
-        position: relative;
-        cursor: pointer;
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-height: 150px;
+        position: relative;
+        cursor: pointer;
     }
 
         .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px var(--shadow-dark);
         }
 
         .service-card h2 {
-            font-size: 1.4em;
+            font-size: 1.5em;
             margin-top: 0;
-            margin-bottom: 10px;
-            color: var(--secondary-color);
-            word-wrap: break-word;
+            margin-bottom: 15px;
+            color: var(--primary-text);
             font-weight: 500;
         }
 
         .service-card p {
             margin: 5px 0;
             font-size: 0.9em;
-            color: #777;
-            word-wrap: break-word;
+            color: var(--secondary-text);
         }
 
+        .service-card .status-indicator {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+        }
+
+    .status-online .status-indicator {
+        background-color: #2ecc71;
+    }
+
+    .status-offline .status-indicator {
+        background-color: #e74c3c;
+    }
+
+    .status-unknown .status-indicator {
+        background-color: #f39c12;
+    }
+
     .status-online {
-        color: #2ecc71;
-        font-weight: bold;
+        border-left: 5px solid #2ecc71;
     }
 
     .status-offline {
-        color: #e74c3c;
-        font-weight: bold;
+        border-left: 5px solid #e74c3c;
     }
 
     .status-unknown {
-        color: #f39c12;
-        font-weight: bold;
+        border-left: 5px solid #f39c12;
     }
 
-    /* Add Button Styling */
+    .status-text {
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-online .status-text {
+        color: #2ecc71;
+    }
+
+    .status-offline .status-text {
+        color: #e74c3c;
+    }
+
+    .status-unknown .status-text {
+        color: #f39c12;
+    }
+
+    /* ---------------------------------- */
+    /* Add Service Card          */
+    /* ---------------------------------- */
     .add-card {
         text-align: center;
-        border: 2px dashed #ccc;
-        background-color: #f9f9f9;
+        border: 2px dashed var(--border-color);
+        background-color: var(--background-secondary);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        box-shadow: none;
     }
+
+        .add-card:hover {
+            border-color: var(--accent-color);
+            background-color: #31354a;
+        }
 
     .add-icon {
-        font-size: 3em;
-        font-weight: 300;
-        color: #ccc;
+        font-size: 3.5em;
+        line-height: 1;
+        color: var(--accent-color);
         margin-bottom: 10px;
+        transition: color 0.3s ease-in-out;
     }
 
-    /* Context Menu Styling */
+    .add-card:hover .add-icon {
+        color: #6a9cf0;
+    }
+
+    .add-card p {
+        font-weight: 500;
+        color: var(--secondary-text);
+        transition: color 0.3s ease-in-out;
+    }
+
+    .add-card:hover p {
+        color: var(--primary-text);
+    }
+
+    /* ---------------------------------- */
+    /* Context Menu              */
+    /* ---------------------------------- */
     .context-menu {
         position: fixed;
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: var(--background-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 6px 20px var(--shadow-dark);
         z-index: 1000;
         list-style: none;
-        padding: 8px 0;
+        padding: 10px 0;
         margin: 0;
         display: none;
-        min-width: 180px;
+        min-width: 200px;
+        font-size: 0.9em;
     }
 
         .context-menu li {
             padding: 12px 20px;
             cursor: pointer;
             transition: background-color 0.2s;
-            font-size: 0.95em;
+            color: var(--primary-text);
         }
 
             .context-menu li:hover {
-                background-color: #f5f5f5;
+                background-color: #3e4259;
             }
 
             .context-menu li a {
@@ -141,124 +220,110 @@
             }
 
         .context-menu .disabled {
-            color: #bdc3c7;
+            color: #555c6d;
             cursor: not-allowed;
             pointer-events: none;
+            background-color: transparent;
         }
 
-    /* Description Tooltip */
     .context-description {
         position: absolute;
-        background: var(--primary-color);
-        color: white;
-        border-radius: 5px;
-        padding: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        background: var(--background-secondary);
+        color: var(--secondary-text);
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 2px 10px var(--shadow-dark);
         display: none;
-        max-width: 300px;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        z-index: 1000;
-        font-size: 0.85em;
-        line-height: 1.4;
+        max-width: 350px;
+        font-size: 0.8em;
+        line-height: 1.5;
+        z-index: 1001;
     }
 
-    /* Modal Styling */
+    /* ---------------------------------- */
+    /* Modals                */
+    /* ---------------------------------- */
     .modal {
-        display: none; /* This ensures the modals are hidden by default */
+        display: none; /* Changed this line */
         position: fixed;
-        z-index: 1001;
+        z-index: 1002;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-        /* The following lines align the content, so we'll leave them */
-        align-items: center;
-        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.7);
+        align-items: center; /* Added this line for vertical centering */
+        justify-content: center; /* Added this line for horizontal centering */
         padding: 20px;
     }
 
     .modal-content {
-        background-color: #fff;
-        padding: 30px;
+        background-color: var(--background-secondary);
+        color: var(--primary-text);
+        padding: 40px;
         border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 15px 40px var(--shadow-dark);
         width: 100%;
-        max-width: 500px;
+        max-width: 550px;
         position: relative;
     }
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 32px;
-        font-weight: bold;
-        position: absolute;
-        top: 15px;
-        right: 25px;
-        line-height: 1;
-    }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 300;
+            color: var(--primary-text);
+        }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-text);
+        }
+
+        .modal-content input[type="text"] {
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            background-color: #2e3146;
+            color: var(--primary-text);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+            .modal-content input[type="text"]:focus {
+                outline: none;
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 3px rgba(75, 128, 232, 0.2);
+            }
+
+            .modal-content input[type="text"]::placeholder {
+                color: #555c6d;
+            }
+
+        .modal-content button[type="submit"] {
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
 
-    .modal-content h2 {
-        margin-top: 0;
-        margin-bottom: 20px;
-        font-weight: 300;
-        color: var(--primary-color);
-    }
-
-    .modal-content form {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .modal-content label {
-        margin-bottom: 5px;
-        font-weight: 500;
-        color: #555;
-    }
-
-    .modal-content input[type="text"] {
-        padding: 12px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 1em;
-        transition: border-color 0.2s;
-    }
-
-        .modal-content input[type="text"]:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-        }
-
-    .modal-content input[type="checkbox"] {
-        margin-right: 8px;
-    }
-
-    .modal-content button[type="submit"] {
-        padding: 12px;
-        background-color: var(--secondary-color);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 10px;
-        font-size: 1em;
-        transition: background-color 0.2s;
-    }
-
-        .modal-content button[type="submit"]:hover {
-            background-color: #2980b9;
-        }
+            .modal-content button[type="submit"]:hover {
+                background-color: #3e6ecb;
+            }
 
     #deleteModal .modal-content button {
         background-color: #e74c3c;
@@ -267,6 +332,52 @@
         #deleteModal .modal-content button:hover {
             background-color: #c0392b;
         }
+
+    .modal .close {
+        color: #7a8c9e;
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 35px;
+        font-weight: 300;
+        line-height: 1;
+        transition: color 0.2s;
+    }
+
+        .modal .close:hover,
+        .modal .close:focus {
+            color: var(--primary-text);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+    .modal p {
+        color: var(--secondary-text);
+        font-size: 1em;
+    }
+
+    .modal strong {
+        color: var(--primary-text);
+    }
 </style>
 
 <h1>Service Pannel</h1>
@@ -277,10 +388,14 @@
         {
             var serviceID = kvp.Key;
             var service = kvp.Value;
-            <div class="service-card" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.localNetwork.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
-                <h2>@service.serviceName</h2>
-                <p><strong>Host:</strong> @service.IP</p>
-                <p><strong>Status:</strong> <span class="status-@service.serviceStatus.ToLower()">@service.serviceStatus</span></p>
+            var statusClass = "status-" + service.serviceStatus.ToLower();
+            <div class="service-card @statusClass" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.localNetwork.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
+                <div>
+                    <h2>@service.serviceName</h2>
+                    <p><strong>Host:</strong> @service.IP</p>
+                    <p><strong>Status:</strong> <span class="status-text">@service.serviceStatus</span></p>
+                </div>
+                <div class="status-indicator"></div>
             </div>
         }
     }
@@ -306,21 +421,25 @@
         <form id="addForm" method="post" asp-page-handler="AddService">
             <label for="add-service-name">Service Name:</label>
             <input type="text" id="add-service-name" name="serviceName" required />
+
             <label for="add-service-desc">Description:</label>
             <input type="text" id="add-service-desc" name="serviceDesc" />
+
             <label for="add-ip">IP Address:</label>
             <input type="text" id="add-ip" name="ip" required />
-            <label>
-                <input type="checkbox" id="add-local-network" name="localNetwork" /> Can RDP
-            </label>
-            <label>
-                <input type="checkbox" id="add-has-webui" name="hasWebUI" /> Has Web UI
-            </label>
-            <label>
-                <input type="checkbox" id="add-access-remote" name="canAccessOutSideNet" /> Can Access Outside Network
-            </label>
+
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="add-local-network" name="localNetwork" /> Can RDP
+                </label>
+                <label>
+                    <input type="checkbox" id="add-has-webui" name="hasWebUI" /> Has Web UI
+                </label>
+            </div>
+
             <label for="add-webui">Web UI URL:</label>
-            <input type="text" id="add-webui" name="webUI" />
+            <input type="text" id="add-webui" name="webUI" placeholder="URL will be disabled if 'Has Web UI' isn't checked" />
+
             <button type="submit">Add Service</button>
         </form>
     </div>
@@ -332,23 +451,28 @@
         <h2>Update Service</h2>
         <form id="updateForm" method="post" asp-page-handler="UpdateService">
             <input type="hidden" id="update-service-id" name="serviceID" />
+
             <label for="update-service-name">Service Name:</label>
             <input type="text" id="update-service-name" name="serviceName" required />
+
             <label for="update-service-desc">Description:</label>
             <input type="text" id="update-service-desc" name="serviceDesc" />
+
             <label for="update-ip">IP Address:</label>
             <input type="text" id="update-ip" name="ip" required />
-            <label>
-                <input type="checkbox" id="update-local-network" name="localNetwork" /> Can RDP
-            </label>
-            <label>
-                <input type="checkbox" id="update-has-webui" name="hasWebUI" /> Has Web UI
-            </label>
-            <label>
-                <input type="checkbox" id="update-access-remote" name="canAccessOutSideNet" /> Can Access Outside Network
-            </label>
+
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="update-local-network" name="localNetwork" /> Can RDP
+                </label>
+                <label>
+                    <input type="checkbox" id="update-has-webui" name="hasWebUI" /> Has Web UI
+                </label>
+            </div>
+
             <label for="update-webui">Web UI URL:</label>
-            <input type="text" id="update-webui" name="webUI" />
+            <input type="text" id="update-webui" name="webUI" placeholder="URL will be disabled if 'Has Web UI' isn't checked" />
+
             <button type="submit">Update Service</button>
         </form>
     </div>
@@ -372,6 +496,29 @@
         const contextDescription = document.getElementById('contextDescription');
         let currentServiceCard = null;
 
+        function toggleWebUIInput(checkboxId, inputId) {
+            const checkbox = document.getElementById(checkboxId);
+            const input = document.getElementById(inputId);
+            input.disabled = !checkbox.checked;
+            input.placeholder = checkbox.checked ? '' : 'URL will be disabled if \'Has Web UI\' isn\'t checked';
+            input.style.backgroundColor = checkbox.checked ? '#2e3146' : '#1e1e2d';
+        }
+
+        function setupModalListeners(modalId, checkboxId, inputId) {
+            const hasWebUICheckbox = document.getElementById(checkboxId);
+
+            // Initial state check
+            toggleWebUIInput(checkboxId, inputId);
+
+            // Event listener for the checkbox
+            hasWebUICheckbox.addEventListener('change', () => {
+                toggleWebUIInput(checkboxId, inputId);
+            });
+        }
+
+        setupModalListeners('addModal', 'add-has-webui', 'add-webui');
+        setupModalListeners('updateModal', 'update-has-webui', 'update-webui');
+
         // Open the Add Service modal
         document.getElementById('addServiceCard').addEventListener('click', () => {
             const addModal = document.getElementById('addModal');
@@ -387,29 +534,19 @@
                     currentServiceCard = e.target.closest('.service-card');
                     const hasWebUI = currentServiceCard.dataset.serviceHasWebui === "true";
                     const localNetwork = currentServiceCard.dataset.serviceLocalnetwork === "true";
-                    const canRemoteAccess = currentServiceCard.dataset.canremoteaccess === "true";
                     const serviceDesc = currentServiceCard.dataset.serviceDesc;
 
                     const navToWebUIItem = document.getElementById('navToWebUI');
                     const rdpItem = document.getElementById('rdp');
 
                     var isInternalRdp = false;
-                    var canAccessWebUI = false;
+                    var canAccessWebUI = true;
 
                     if (localNetwork === true && @ViewData["IsInternalNetwork"] === true) {
                         isInternalRdp = true;
                     }
 
-                    if (canRemoteAccess === true) {
-                        canAccessWebUI = true;
-                    }
-                    else {
-                        if (@ViewData["IsInternalNetwork"] === true) {
-                            canAccessWebUI = true;
-                        }
-                    }
-
-                    if (hasWebUI === false){
+                    if (hasWebUI === false) {
                         canAccessWebUI = false;
                     }
 
@@ -443,6 +580,9 @@
             if (!document.getElementById('navToWebUI').classList.contains('disabled') && currentServiceCard) {
                 const url = currentServiceCard.dataset.serviceWebui;
                 if (url) {
+                    //hide context menu after opening
+                    contextMenu.style.display = 'none';
+                    contextDescription.style.display = 'none';
                     window.open(url, '_blank');
                 }
             }
@@ -467,7 +607,6 @@
                 const localNetwork = currentServiceCard.dataset.serviceLocalnetwork === "true";
                 const hasWebUI = currentServiceCard.dataset.serviceHasWebui === "true";
                 const webUI = currentServiceCard.dataset.serviceWebui;
-                const canRemoteAccess = currentServiceCard.dataset.canremoteaccess === "true";
 
                 document.getElementById('update-service-id').value = serviceID;
                 document.getElementById('update-service-name').value = serviceName;
@@ -475,10 +614,14 @@
                 document.getElementById('update-service-desc').value = description;
                 document.getElementById('update-local-network').checked = localNetwork;
                 document.getElementById('update-has-webui').checked = hasWebUI;
-                document.getElementById('update-access-remote').checked = canRemoteAccess;
                 document.getElementById('update-webui').value = webUI;
 
                 modal.style.display = "flex";
+                toggleWebUIInput("update-has-webui", "update-webui");
+
+                //hide context menu after opening
+                contextMenu.style.display = 'none';
+                contextDescription.style.display = 'none';
             }
         });
 
@@ -492,6 +635,10 @@
                 document.getElementById('delete-service-name').innerText = serviceName;
 
                 modal.style.display = "flex";
+
+                //hide context menu after opening
+                contextMenu.style.display = 'none';
+                contextDescription.style.display = 'none';
             }
         });
 
