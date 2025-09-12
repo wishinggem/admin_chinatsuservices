@@ -244,26 +244,38 @@ namespace admin_chinatsuservices.Pages
             }
         }
 
-        static string GetPublicIPAddress()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostReorderServices([FromBody] List<string> orderedIds)
         {
-            String address = "";
-            WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");
-            using (WebResponse response = request.GetResponse())
-            using (StreamReader stream = new StreamReader(response.GetResponseStream()))
+            try
             {
-                address = stream.ReadToEnd();
+                if (orderedIds == null || orderedIds.Count == 0)
+                    return BadRequest("No IDs received");
+
+                var services = JsonHandler.DeserializeJsonFile<Dictionary<string, Service>>(servicesPath)
+                              ?? new Dictionary<string, Service>();
+
+                var reordered = new Dictionary<string, Service>();
+                foreach (var id in orderedIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(id) && services.ContainsKey(id))
+                    {
+                        reordered[id] = services[id];
+                    }
+                }
+
+                JsonHandler.SerializeJsonFile(servicesPath, reordered);
+
+                return new JsonResult(new { success = true });
             }
-
-            int first = address.IndexOf("Address: ") + 9;
-            int last = address.LastIndexOf("</body>");
-            address = address.Substring(first, last - first);
-
-            return address;
-        }
-
-        private string GetClientPublicIP()
-        {
-            return HttpContext.Connection.RemoteIpAddress.ToString();
+            catch (Exception e)
+            {
+                Console.WriteLine("Error:");
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Stack Trace:");
+                Console.WriteLine(e.StackTrace);
+                return BadRequest("Error processing request");
+            }
         }
     }
 }
@@ -280,10 +292,4 @@ public class Service
     public string webUI;
     [JsonIgnore]
     public string serviceStatus;
-}
-
-[Serializable]
-public class NetworkInfo
-{
-    public string ssid;
 }

@@ -4,6 +4,11 @@
     ViewData["Title"] = "Service Pannel";
 }
 
+<form id="antiforgery-form" method="post">
+    @Html.AntiForgeryToken()
+</form>
+
+
 <style>
     /* ---------------------------------- */
     /* Global Styles             */
@@ -51,6 +56,8 @@
         gap: 30px;
         max-width: 1400px;
         margin: 0 auto;
+        margin-bottom: 100px;
+        margin-top: 30px;
     }
 
     /* ---------------------------------- */
@@ -188,7 +195,7 @@
     /* Context Menu              */
     /* ---------------------------------- */
     .context-menu {
-        position: fixed;
+        position: absolute; /* Changed from 'fixed' to 'absolute' */
         background: var(--background-secondary);
         border: 1px solid var(--border-color);
         border-radius: 8px;
@@ -227,7 +234,7 @@
         }
 
     .context-description {
-        position: absolute;
+        position: absolute; /* Changed from 'fixed' to 'absolute' */
         background: var(--background-secondary);
         color: var(--secondary-text);
         border-radius: 8px;
@@ -380,8 +387,8 @@
     }
 </style>
 
-<h1>Service Pannel</h1>
-<div class="dashboard-container">
+<h1 style="margin-bottom: 15px;">Service Pannel</h1>
+<div id="services-list" class="dashboard-container">
     @if (ViewData["Services"] is Dictionary<string, Service> services)
     {
         @foreach (var kvp in services)
@@ -389,7 +396,7 @@
             var serviceID = kvp.Key;
             var service = kvp.Value;
             var statusClass = "status-" + service.serviceStatus.ToLower();
-            <div class="service-card @statusClass" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.localNetwork.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
+            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.localNetwork.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
                 <div>
                     <h2>@service.serviceName</h2>
                     <p><strong>Host:</strong> @service.IP</p>
@@ -490,6 +497,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const contextMenu = document.getElementById('contextMenu');
@@ -554,15 +562,36 @@
                     navToWebUIItem.classList.toggle('disabled', !canAccessWebUI);
                     rdpItem.classList.toggle('disabled', !isInternalRdp);
 
+                    // Position the context menu
                     contextMenu.style.display = 'block';
                     contextMenu.style.left = `${e.pageX}px`;
                     contextMenu.style.top = `${e.pageY}px`;
 
-                    // Show description
+                    // Show description with dynamic positioning
                     contextDescription.innerText = serviceDesc || 'No description provided.';
                     contextDescription.style.display = 'block';
-                    contextDescription.style.left = `${e.pageX}px`;
-                    contextDescription.style.top = `${e.pageY + contextMenu.offsetHeight + 5}px`;
+
+                    const menuWidth = contextMenu.offsetWidth;
+                    const descWidth = contextDescription.offsetWidth;
+                    const menuHeight = contextMenu.offsetHeight;
+                    const descHeight = contextDescription.offsetHeight;
+
+                    // Calculate position
+                    let leftPos = e.pageX + menuWidth + 10;
+                    let topPos = e.pageY;
+
+                    // Check if description goes off the right side
+                    if (leftPos + descWidth > window.scrollX + window.innerWidth) {
+                        leftPos = e.pageX - descWidth - 10;
+                    }
+
+                    // Check if description goes off the top
+                    if (topPos + descHeight > window.scrollY + window.innerHeight) {
+                         topPos = e.pageY + menuHeight - descHeight;
+                    }
+
+                    contextDescription.style.left = `${leftPos}px`;
+                    contextDescription.style.top = `${topPos}px`;
                 }
             });
         });
@@ -655,6 +684,41 @@
                 event.target.style.display = "none";
             }
         };
+
+        var el = document.getElementById('services-list'); // make sure your cards container has this ID
+        if (!el) return;
+
+        new Sortable(el, {
+            animation: 150,
+            filter: ".add-card",
+            onEnd: function () {
+                if (confirm("Save new order?")) {
+                    let ids = [];
+                    document.querySelectorAll("#services-list .service-card").forEach(card => {
+                        if (card.dataset.id) { // only push if data-id exists
+                            ids.push(card.dataset.id);
+                        }
+                    })
+        
+                    // get antiforgery token from hidden input
+                    let token = document.querySelector('#antiforgery-form input[name="__RequestVerificationToken"]').value;
+        
+                    fetch('@Url.Page("ServicePannel")?handler=ReorderServices', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": token // 👈 important
+                        },
+                        body: JSON.stringify(ids)
+                    }).then(r => {
+                        if (r.ok) location.reload();
+                        else alert("Failed to save order.");
+                    });
+                } else {
+                    location.reload();
+                }
+            }
+        });
     });
 
     // Function to generate and download the .rdp file
