@@ -691,37 +691,43 @@
         var el = document.getElementById('services-list'); // make sure your cards container has this ID
         if (!el) return;
 
-        new Sortable(el, {
-            animation: 150,
-            filter: ".add-card",
-            onEnd: function () {
-                if (confirm("Save new order?")) {
-                    let ids = [];
-                    document.querySelectorAll("#services-list .service-card").forEach(card => {
-                        if (card.dataset.id) { // only push if data-id exists
-                            ids.push(card.dataset.id);
-                        }
-                    })
-        
-                    // get antiforgery token from hidden input
-                    let token = document.querySelector('#antiforgery-form input[name="__RequestVerificationToken"]').value;
-        
-                    fetch('@Url.Page("ServicePannel")?handler=ReorderServices', {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "RequestVerificationToken": token // 👈 important
-                        },
-                        body: JSON.stringify(ids)
-                    }).then(r => {
-                        if (r.ok) location.reload();
-                        else alert("Failed to save order.");
-                    });
-                } else {
-                    location.reload();
+        if (@ViewData["isMobile"] === false){
+            console.log("Agent is Desktop, Enabling drag-and-drop sorting");
+            new Sortable(el, {
+                animation: 150,
+                filter: ".add-card",
+                onEnd: function () {
+                    if (confirm("Save new order?")) {
+                        let ids = [];
+                        document.querySelectorAll("#services-list .service-card").forEach(card => {
+                            if (card.dataset.id) { // only push if data-id exists
+                                ids.push(card.dataset.id);
+                            }
+                        })
+
+                        // get antiforgery token from hidden input
+                        let token = document.querySelector('#antiforgery-form input[name="__RequestVerificationToken"]').value;
+
+                        fetch('@Url.Page("ServicePannel")?handler=ReorderServices', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "RequestVerificationToken": token // 👈 important
+                            },
+                            body: JSON.stringify(ids)
+                        }).then(r => {
+                            if (r.ok) location.reload();
+                            else alert("Failed to save order.");
+                        });
+                    } else {
+                        location.reload();
+                    }
                 }
-            }
-        });
+            });
+        }
+        else{
+            console.log("Agent is Mobile, Disabling drag-and-drop sorting");
+        }
     });
 
     // Function to generate and download the .rdp file

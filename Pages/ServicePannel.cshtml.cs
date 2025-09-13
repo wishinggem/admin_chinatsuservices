@@ -63,6 +63,9 @@ namespace admin_chinatsuservices.Pages
                 ViewData["Services"] = new Dictionary<string, Service>();
             }
             ViewData["IsInternalNetwork"] = IsInternalNetwork().ToString().ToLower();
+            var userAgent = Request.Headers["User-Agent"].ToString();
+            bool isMobile = userAgent.Contains("Mobi") || userAgent.Contains("Android") || userAgent.Contains("iPhone") || userAgent.Contains("iPad");
+            ViewData["isMobile"] = isMobile.ToString().ToLower();
         }
 
         private bool IsInternalNetwork()
