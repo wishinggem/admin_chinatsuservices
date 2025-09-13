@@ -398,11 +398,21 @@
         {
             var serviceID = kvp.Key;
             var service = kvp.Value;
+            var conectionTypeStrings = "";
+            if (service.hasWebUI)
+            {
+                conectionTypeStrings += " WebUI;";
+            }
+            if (service.canRDP)
+            {
+                conectionTypeStrings += " RDP;";
+            }
             var statusClass = "status-" + service.serviceStatus.ToLower();
-            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.localNetwork.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
+            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.canRDP.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
                 <div>
                     <h2>@service.serviceName</h2>
                     <p><strong>Host:</strong> @service.IP</p>
+                    <p>@conectionTypeStrings</p>
                     <p><strong>Status:</strong> <span class="status-text">@service.serviceStatus</span></p>
                 </div>
                 <div class="status-indicator"></div>

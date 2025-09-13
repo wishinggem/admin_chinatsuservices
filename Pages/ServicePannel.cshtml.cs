@@ -132,7 +132,7 @@ namespace admin_chinatsuservices.Pages
                 serviceName = serviceName,
                 description = serviceDesc,
                 IP = ip,
-                localNetwork = localNetworkSwitch,
+                canRDP = localNetworkSwitch,
                 hasWebUI = hasWebUISwitch,
                 webUI = webUI,
                 canRemoteAccess = true,
@@ -217,7 +217,7 @@ namespace admin_chinatsuservices.Pages
                     serviceName = serviceName,
                     description = serviceDesc,
                     IP = ip,
-                    localNetwork = localNetworkSwitch,
+                    canRDP = localNetworkSwitch,
                     hasWebUI = hasWebUISwitch,
                     webUI = webUI,
                     canRemoteAccess = true,
@@ -289,7 +289,7 @@ public class Service
     public string serviceName;
     public string description;
     public string IP;
-    public bool localNetwork;
+    public bool canRDP;
     public bool hasWebUI;
     public bool canRemoteAccess;
     public string webUI;
