@@ -407,8 +407,12 @@
             {
                 conectionTypeStrings += " RDP;";
             }
+            if (service.canSSH)
+            {
+                conectionTypeStrings += " SSH;";
+            }
             var statusClass = "status-" + service.serviceStatus.ToLower();
-            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.canRDP.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
+            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-canssh="@service.canSSH.ToString().ToLower()" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.canRDP.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
                 <div>
                     <h2>@service.serviceName</h2>
                     <p><strong>Host:</strong> @service.IP</p>
@@ -455,6 +459,9 @@
                 <label>
                     <input type="checkbox" id="add-has-webui" name="hasWebUI" /> Has Web UI
                 </label>
+                <label>
+                    <input type="checkbox" id="add-can-ssh" name="canSSH" /> Can SSH
+                </label>
             </div>
 
             <label for="add-webui">Web UI URL:</label>
@@ -487,6 +494,9 @@
                 </label>
                 <label>
                     <input type="checkbox" id="update-has-webui" name="hasWebUI" /> Has Web UI
+                </label>
+                <label>
+                    <input type="checkbox" id="update-can-ssh" name="canSSH" /> Can SSH
                 </label>
             </div>
 
@@ -649,6 +659,7 @@
                 const localNetwork = currentServiceCard.dataset.serviceLocalnetwork === "true";
                 const hasWebUI = currentServiceCard.dataset.serviceHasWebui === "true";
                 const webUI = currentServiceCard.dataset.serviceWebui;
+                const canSSH = currentServiceCard.dataset.serviceCanssh === "true";
 
                 document.getElementById('update-service-id').value = serviceID;
                 document.getElementById('update-service-name').value = serviceName;
@@ -656,6 +667,7 @@
                 document.getElementById('update-service-desc').value = description;
                 document.getElementById('update-local-network').checked = localNetwork;
                 document.getElementById('update-has-webui').checked = hasWebUI;
+                document.getElementById('update-can-ssh').checked = canSSH;
                 document.getElementById('update-webui').value = webUI;
 
                 modal.style.display = "flex";

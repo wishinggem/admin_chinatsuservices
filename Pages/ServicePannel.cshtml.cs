@@ -85,11 +85,11 @@ namespace admin_chinatsuservices.Pages
             return true;
         }
 
-        public IActionResult OnPostAddService(string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string webUI)
+        public IActionResult OnPostAddService(string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string canSSH, string webUI)
         {
             bool localNetworkSwitch;
             bool hasWebUISwitch;
-            bool canRemoteAccessSwitch;
+            bool canSshSwitch;
 
             if (localNetwork == "on")
             {
@@ -109,14 +109,14 @@ namespace admin_chinatsuservices.Pages
                 hasWebUISwitch = false;
             }
 
-            /*if (canAccessOutSideNet == "on")
+            if (canSSH == "on")
             {
-                canRemoteAccessSwitch = true;
+                canSshSwitch = true;
             }
             else
             {
-                canRemoteAccessSwitch = false;
-            }*/
+                canSshSwitch = false;
+            }
 
             Dictionary<string, Service> services = null;
             try 
@@ -135,6 +135,7 @@ namespace admin_chinatsuservices.Pages
                 canRDP = localNetworkSwitch,
                 hasWebUI = hasWebUISwitch,
                 webUI = webUI,
+                canSSH = canSshSwitch,
                 canRemoteAccess = true,
                 serviceStatus = "Unknown"
             };
@@ -167,11 +168,11 @@ namespace admin_chinatsuservices.Pages
             return RedirectToPage();
         }
 
-        public IActionResult OnPostUpdateService(string serviceID, string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string webUI)
+        public IActionResult OnPostUpdateService(string serviceID, string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string canSSH, string webUI)
         {
             bool localNetworkSwitch;
             bool hasWebUISwitch;
-            bool canRemoteAccessSwitch;
+            bool canSshSwitch;
 
             if (localNetwork == "on")
             {
@@ -191,14 +192,14 @@ namespace admin_chinatsuservices.Pages
                 hasWebUISwitch = false;
             }
 
-            /*if (canAccessOutSideNet == "on")
+            if (canSSH == "on")
             {
-                canRemoteAccessSwitch = true;
+                canSshSwitch = true;
             }
             else
             {
-                canRemoteAccessSwitch = false;
-            }*/
+                canSshSwitch = false;
+            }
 
             Dictionary<string, Service> services = null;
             try
@@ -220,6 +221,7 @@ namespace admin_chinatsuservices.Pages
                     canRDP = localNetworkSwitch,
                     hasWebUI = hasWebUISwitch,
                     webUI = webUI,
+                    canSSH = canSshSwitch,
                     canRemoteAccess = true,
                     serviceStatus = "Unknown"
                 };
@@ -291,6 +293,7 @@ public class Service
     public string IP;
     public bool canRDP;
     public bool hasWebUI;
+    public bool canSSH;
     public bool canRemoteAccess;
     public string webUI;
     [JsonIgnore]
