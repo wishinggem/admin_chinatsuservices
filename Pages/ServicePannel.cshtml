@@ -412,11 +412,12 @@
                 conectionTypeStrings += " SSH;";
             }
             var statusClass = "status-" + service.serviceStatus.ToLower();
-            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-canssh="@service.canSSH.ToString().ToLower()" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.canRDP.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
+            <div class="service-card @statusClass" data-id="@serviceID" data-service-id="@serviceID" data-service-name="@service.serviceName" data-service-ip="@service.IP" data-service-ostype="@service.OSType" data-service-canssh="@service.canSSH.ToString().ToLower()" data-service-webui="@service.webUI" data-service-has-webui="@service.hasWebUI.ToString().ToLower()" data-service-desc="@service.description" data-service-localnetwork="@service.canRDP.ToString().ToLower()" data-canRemoteAccess="@service.canRemoteAccess.ToString().ToLower()">
                 <div>
                     <h2>@service.serviceName</h2>
                     <p><strong>Host:</strong> @service.IP</p>
                     <p>@conectionTypeStrings</p>
+                    <p>OS: @service.OSType</p>
                     <p><strong>Status:</strong> <span class="status-text">@service.serviceStatus</span></p>
                 </div>
                 <div class="status-indicator"></div>
@@ -451,6 +452,9 @@
 
             <label for="add-ip">IP Address:</label>
             <input type="text" id="add-ip" name="ip" required />
+
+            <label for="add-ip">OS:</label>
+            <input type="text" id="add-OSType" name="OSType" required />
 
             <div class="checkbox-group">
                 <label>
@@ -487,6 +491,9 @@
 
             <label for="update-ip">IP Address:</label>
             <input type="text" id="update-ip" name="ip" required />
+
+            <label for="add-ip">OS:</label>
+            <input type="text" id="update-OSType" name="OSType" required />
 
             <div class="checkbox-group">
                 <label>
@@ -660,10 +667,12 @@
                 const hasWebUI = currentServiceCard.dataset.serviceHasWebui === "true";
                 const webUI = currentServiceCard.dataset.serviceWebui;
                 const canSSH = currentServiceCard.dataset.serviceCanssh === "true";
+                const OSType = currentServiceCard.dataset.serviceOstype;
 
                 document.getElementById('update-service-id').value = serviceID;
                 document.getElementById('update-service-name').value = serviceName;
                 document.getElementById('update-ip').value = serviceIp;
+                document.getElementById('update-OSType').value = OSType;
                 document.getElementById('update-service-desc').value = description;
                 document.getElementById('update-local-network').checked = localNetwork;
                 document.getElementById('update-has-webui').checked = hasWebUI;

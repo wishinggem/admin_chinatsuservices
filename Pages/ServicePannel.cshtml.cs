@@ -85,7 +85,7 @@ namespace admin_chinatsuservices.Pages
             return true;
         }
 
-        public IActionResult OnPostAddService(string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string canSSH, string webUI)
+        public IActionResult OnPostAddService(string serviceName, string serviceDesc, string ip, string OSType, string localNetwork, string hasWebUI, string canSSH, string webUI)
         {
             bool localNetworkSwitch;
             bool hasWebUISwitch;
@@ -137,6 +137,7 @@ namespace admin_chinatsuservices.Pages
                 webUI = webUI,
                 canSSH = canSshSwitch,
                 canRemoteAccess = true,
+                OSType = OSType,
                 serviceStatus = "Unknown"
             };
 
@@ -168,7 +169,7 @@ namespace admin_chinatsuservices.Pages
             return RedirectToPage();
         }
 
-        public IActionResult OnPostUpdateService(string serviceID, string serviceName, string serviceDesc, string ip, string localNetwork, string hasWebUI, string canSSH, string webUI)
+        public IActionResult OnPostUpdateService(string serviceID, string serviceName, string serviceDesc, string ip, string OSType, string localNetwork, string hasWebUI, string canSSH, string webUI)
         {
             bool localNetworkSwitch;
             bool hasWebUISwitch;
@@ -223,6 +224,7 @@ namespace admin_chinatsuservices.Pages
                     webUI = webUI,
                     canSSH = canSshSwitch,
                     canRemoteAccess = true,
+                    OSType = OSType,
                     serviceStatus = "Unknown"
                 };
 
@@ -296,6 +298,7 @@ public class Service
     public bool canSSH;
     public bool canRemoteAccess;
     public string webUI;
+    public string OSType;
     [JsonIgnore]
     public string serviceStatus;
 }
