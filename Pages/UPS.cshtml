@@ -1,0 +1,231 @@
+﻿@page
+@model admin_chinatsuservices.Pages.UPSModel
+@{
+    ViewData["Title"] = "UPS Status";
+}
+
+<style>
+    /* Global dark mode styling for the body */
+    body {
+        background-color: #121212 !important; /* A deep, dark gray for the background */
+        color: #e0e0e0 !important; /* A soft white for the main text */
+    }
+
+    /* Basic styling to make the cards look nice and add some spacing */
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* A more pronounced shadow for dark mode contrast */
+        background-color: #1e1e1e; /* Darker card background */
+        color: #e0e0e0; /* A soft white for the card text */
+    }
+
+    .card-header {
+        font-weight: bold;
+        border-bottom: 1px solid #333; /* Darker border for the header */
+        color: #e0e0e0;
+    }
+
+    .list-group-item {
+        background-color: transparent;
+        border: none;
+        color: #bdbdbd; /* A slightly lighter gray for list items */
+    }
+
+    /* Style for the gauge containers */
+    .gauge-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .gauge-percentage {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #e0e0e0; /* White text for the percentage */
+    }
+
+    .text-secondary {
+        color: #9e9e9e !important; /* Adjusted secondary text color for better readability */
+    }
+
+    /* Custom styles to center the card content and control spacing on small screens */
+    .card-body-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* Center the gauge and voltage sections */
+        gap: 2rem; /* Add some space between the sections */
+    }
+
+    .gauge-section {
+        flex: 1; /* Allow these sections to grow and fill the space */
+        min-width: 250px; /* Ensure a minimum width for readability */
+        max-width: 350px; /* Limit max width to keep it from getting too large */
+        text-align: center;
+    }
+
+    .voltage-section {
+        flex: 1;
+        min-width: 200px;
+        max-width: 300px;
+        text-align: center;
+        margin-top: 2rem; /* Add margin to separate from gauges */
+    }
+
+    /* Badge colors for dark mode */
+    .badge {
+        color: #121212 !important; /* Ensure badge text is dark for contrast */
+    }
+
+    .bg-info {
+        background-color: #0d88b4 !important;
+    }
+
+    .bg-secondary {
+        background-color: #616161 !important;
+    }
+
+    /* Media query for smaller screens */
+    @@media (max-width: 768px) {
+        .card-body-content {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<h1>UPS Status</h1>
+<hr style="border-color: #333;" />
+<div class="row d-flex justify-content-center">
+    <div class="col-12 col-md-10 mb-4">
+        <div class="card h-100">
+            <div class="card-header">Power & Battery</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 text-center">
+                        <div class="gauge-container">
+                            <canvas id="batteryChargeChart"></canvas>
+                            <div class="gauge-percentage" id="battery-percentage"></div>
+                            <div class="mt-2 text-center" style="font-size: 1.2rem;">Battery Charge</div>
+                        </div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div class="gauge-container">
+                            <canvas id="upsLoadChart"></canvas>
+                            <div class="gauge-percentage" id="load-percentage"></div>
+                            <div class="mt-2 text-center" style="font-size: 1.2rem;">UPS Load</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-6 text-center">
+                        <div class="d-flex flex-column align-items-center">
+                            <span style="font-size: 1.5rem; font-weight: bold;">@Model.Data.InputVoltage V</span>
+                            <span class="text-secondary mt-1">Input Voltage</span>
+                        </div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div class="d-flex flex-column align-items-center">
+                            <span style="font-size: 1.5rem; font-weight: bold;">@Model.Data.OutputVoltage V</span>
+                            <span class="text-secondary mt-1">Output Voltage</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="card">
+            <div class="card-header">Detailed Status</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Battery Status
+                    <span class="badge bg-info">@Model.Data.BatteryStatus</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Battery Runtime
+                    <span class="badge bg-secondary">@(Math.Round(Model.Data.BatteryRuntimeMinutes / 60, 4))  minutes</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const upsData = @Html.Raw(Model.DataAsJson);
+
+    // Custom Chart.js plugin for half-doughnut chart with percentage text
+    const halfDoughnutPlugin = {
+        id: 'halfDoughnutPlugin',
+        beforeDraw: (chart) => {
+            const {
+                chartArea: {
+                    top,
+                    bottom,
+                    left,
+                    right
+                },
+                ctx
+            } = chart;
+            const canvas = chart.canvas;
+
+            // Center the text
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Get the total percentage
+            const total = chart.data.datasets[0].data[0];
+            const percentage = `${Math.round(total)}%`;
+
+            // Display the percentage value
+            const percentageElementId = chart.canvas.id.includes('battery') ? 'battery-percentage' : 'load-percentage';
+            document.getElementById(percentageElementId).textContent = percentage;
+
+            ctx.restore();
+        }
+    };
+
+    // Register the plugin
+    Chart.register(halfDoughnutPlugin);
+
+    // Function to create a half-doughnut chart
+    function createHalfDoughnutChart(ctxId, dataValue, color, label) {
+        const ctx = document.getElementById(ctxId).getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [dataValue, 100 - dataValue],
+                    backgroundColor: [color, 'rgba(255, 255, 255, 0.1)'], /* Adjusted for darker background */
+                    borderColor: [color, 'rgba(255, 255, 255, 0.1)'], /* Adjusted for darker background */
+                    borderWidth: 0,
+                }],
+            },
+            options: {
+                responsive: true,
+                cutout: '80%',
+                rotation: -90,
+                circumference: 180,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+            }
+        });
+    }
+
+    // Create the charts
+    createHalfDoughnutChart('batteryChargeChart', @Model.Data.BatteryCharge, '#4CAF50', 'Battery Charge');
+    createHalfDoughnutChart('upsLoadChart', @Model.Data.UpsLoad, '#2196F3', 'UPS Load');
+
+    // Note: The history chart code seems incomplete in the provided snippet, so I've left it as is.
+</script>
